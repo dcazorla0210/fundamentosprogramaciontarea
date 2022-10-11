@@ -1,2 +1,2 @@
-# fundamentosprogramaciontarea
-# tarea
+# fundamentos de programacion tarea
+# 

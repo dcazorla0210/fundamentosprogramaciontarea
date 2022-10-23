@@ -65,7 +65,7 @@ int main(){
                           	break;
                           default:
                               printf("POR FAVOR INTRODUZCA UNA OPCION VALIDA.\n");
-                              break;
+                              
                           
                     }
                   }while(seleccion[3]!=0);
@@ -101,7 +101,7 @@ int main(){
                           	break;
                           default:
                               printf("POR FAVOR INTRODUZCA UNA OPCION VALIDA.\n");
-                              break;
+                              
                           
                     }
                     break;
@@ -135,7 +135,7 @@ int main(){
                           	break;
                           default:
                               printf("POR FAVOR INTRODUZCA UNA OPCION VALIDA.\n");
-                              break;
+                              
                           
                     }
                     break;
@@ -186,7 +186,7 @@ int main(){
                           	break;
                           default:
                               printf("POR FAVOR INTRODUZCA UNA OPCION VALIDA.\n");
-                              break;
+                              
                     }
         } while (seleccion[6]!=0);
         
@@ -197,7 +197,7 @@ int main(){
         break;
         default:
              printf("POR FAVOR INTRODUZCA UNA OPCION VALIDA.\n");
-        break;
+        
        
        }
         } while (seleccion[1]!=0);

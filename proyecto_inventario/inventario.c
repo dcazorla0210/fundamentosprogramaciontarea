@@ -13,6 +13,8 @@ typedef struct
       long long int telefono;
 
 }Clientes;
+void creararchivoclientes();
+int verificarcliente();
 void registrarclientes();
 void listadodeclientes();
 void buscarcliente();
@@ -244,9 +246,59 @@ void limpiar(){
       
       #endif // DEBUG
 }
+void creararchivoclientes()
+{
+    FILE *arch;
+    arch=fopen("clientes.dat","a+");
+    if (arch==NULL)
+        exit(1);
+    fclose(arch);
+    
+}
+int verificarcliente()
+{
+    FILE *arch;
+    arch=fopen("clientes.dat","rb");
+    if (arch==NULL)
+        exit(1);
+    printf("Ingrese la cedula del cliente :");
+    int ced;
+    scanf("%d", &ced);
+    Clientes cliente;
+    int existe=0;
+    fread(&cliente, sizeof(Clientes), 1, arch);
+    while(!feof(arch)) 
+    {
+        if (ced==cliente.cedula) 
+        {
+           printf("%d %s %s %s %lld\n", cliente.cedula, cliente.nombre, cliente.apellido,cliente.direccion,cliente.telefono);
+           existe=1;
+           break;
+        }
+        fread(&cliente, sizeof(Clientes), 1, arch);
+    }
+    fclose(arch);
+    if (existe==1){
+        
+        
+        return 1;      
+    }else{
+        return ced;
+    }
+        
+    
+    
+}
 void registrarclientes()
 {
-     FILE *arch;
+    creararchivoclientes();
+    int c;
+    c=verificarcliente();
+    if (c==1)
+    {
+        printf("La cedula ingresada ya existe\n");
+    }else{
+        FILE *arch;
     char ch;
 
     arch=fopen("clientes.dat","a+b");
@@ -254,8 +306,8 @@ void registrarclientes()
         exit(1);
     Clientes cliente;
 
-    printf("Ingrese cedula del cliente: ");
-    scanf("%d",&cliente.cedula);
+    
+    cliente.cedula=c;
     printf("Ingrese el nombre del cliente: ");
     scanf("%s", cliente.nombre);
     printf("Ingrese apellido:");
@@ -267,7 +319,7 @@ void registrarclientes()
     
     fwrite(&cliente, sizeof(Clientes), 1, arch);
     
-    fclose(arch);
+    fclose(arch);}
 }
 void listadodeclientes()
 {
@@ -283,7 +335,12 @@ void listadodeclientes()
         
         fread(&cliente, sizeof(Clientes), 1, arch);
     }
-    fclose(arch); 
+    fclose(arch);
+
+    
+    
+
+      
     
 }
 void buscarcliente()
@@ -292,7 +349,7 @@ void buscarcliente()
     arch=fopen("clientes.dat","rb");
     if (arch==NULL)
         exit(1);
-    printf("Ingrese la cedula del cliente a consultar:");
+    printf("Ingrese la cedula del cliente :");
     int ced;
     scanf("%d", &ced);
     Clientes cliente;

@@ -68,20 +68,20 @@ int main(){
                     switch (seleccion[3])
                     {
                           case 1:
-                          printf("crear\n");
+                          printf("----------------REGISTRAR CLIENTES------------------\n");
                           registrarclientes();
                           printf("n");
                           break;
                           case 2:
-                          printf("buscar\n");
+                          printf("----------------BUSCAR CLIENTES------------------\n");
                           buscarcliente();
                           break;
                           case 3:
-                          printf("modificar\n");
+                          printf("----------------MODIFICAR CLIENTES------------------\n");
                           modificarclientes();
                           break;
                           case 4:
-                          printf("borrar\n");
+                          printf("BORRAR CLIENTES\n");
                           borrarclientes();
                           break;
                           case 5:

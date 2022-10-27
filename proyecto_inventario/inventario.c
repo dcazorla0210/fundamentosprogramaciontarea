@@ -1,18 +1,30 @@
 /*sitema de inventario don regalon*/
 #include <stdio.h>
-#ifdef _WIN32 || _WIN64
- #include <windows.h>
-#endif // DEBUG
+#include <stdlib.h>
+#include <stdbool.h>
+// #ifdef _WIN32 || _WIN64
+//  #include <windows.h>
+// #endif // DEBUG
 #define TM 20
+#define TMD 200
 typedef struct 
 {
       int cedula;
       char nombre[TM];
       char apellido[TM];
-      char direccion[TM];
+      char direccion[TMD];
       long long int telefono;
 
 }Clientes;
+typedef struct 
+{
+      int codigo,existencia,dep;
+      char nombre[TM];
+      float precio;
+      
+
+}Productos;
+
 void creararchivoclientes();
 int verificarcliente();
 void registrarclientes();
@@ -20,6 +32,16 @@ void listadodeclientes();
 void buscarcliente();
 void modificarclientes();
 void borrarclientes();
+//productos
+void creararchivoproductos();
+bool verificarproducto(int c);
+void registrarproductos();
+void listadodeproductos();
+void buscarproducto();
+void modificarproductos();
+void borrarproductos();
+void listadodeproductosagotados();
+void listadodeproductosdisponibles();
 
 void limpiar();
 
@@ -108,22 +130,30 @@ int main(){
                     printf("2.BUSCAR PRODUCTO\n");
                     printf("3.MODIFICAR PRODUCTO\n");
                     printf("4.ELIMINAR PRODUCTO\n");
+                    printf("5.LISTA DE PRODUCTOS\n");
                     printf("0.VOLVER\n");
                     scanf("%d",&seleccion[4]);
                     switch (seleccion[4])
                     {
                           case 1:
-                          printf("crear\n");
+                          printf("----------------REGISTRAR PRODUCTOS------------------\n");
+                          registrarproductos();
                           break;
                           case 2:
-                          printf("buscar\n");
+                          printf("----------------BUSCAR PRODUCTO------------------\n");
+                          buscarproducto();
                           break;
                           case 3:
-                          printf("modificar\n");
+                          printf("----------------MODIFICAR PRODUCTO------------------\n");
+                          modificarproductos();
                           break;
                           case 4:
-                          printf("borrar\n");
+                          printf("----------------ELIMINAR PRODUCTO------------------\n");
+                          borrarproductos();
                           break;
+                          case 5:
+                            printf("----------------LISTA DE PRODUCTOS------------------\n");
+                            listadodeproductos();
                           case 0:
                           	break;
                           default:
@@ -205,12 +235,14 @@ int main(){
                           break;
                           case 4:
                           printf("EXISTENCIA DE PRODUCTOS\n");
+                          listadodeproductosdisponibles();
                           break;
                           case 5:
                           printf("PRODUCTOS POR DEPARTAMENTO\n");
                           break;
                           case 6:
                           printf("PRODUCTOS SIN EXISTENCIA\n");
+                          listadodeproductosagotados();
                           break;
                           case 0:
                           	break;
@@ -239,19 +271,19 @@ int main(){
      return 0;
      }
 void limpiar(){
-      #ifdef _WIN32 || _WIN64
-      system("cls");
-      #else
+      // #ifdef _WIN32 || _WIN64
+      // system("cls");
+      // #else
       system("clear");
       
-      #endif // DEBUG
+      // #endif // DEBUG
 }
 void creararchivoclientes()
 {
     FILE *arch;
     arch=fopen("clientes.dat","a+");
     if (arch==NULL)
-        exit(1);
+        exit(-1);
     fclose(arch);
     
 }
@@ -311,9 +343,9 @@ void registrarclientes()
     printf("Ingrese el nombre del cliente: ");
     scanf("%s", cliente.nombre);
     printf("Ingrese apellido:");
-    scanf("%s",&cliente.apellido);
+    scanf("%s",cliente.apellido);
     printf("Ingrese direccion:");
-    scanf("%s",&cliente.direccion);
+    scanf("%s",cliente.direccion);
     printf("Ingrese telefono:");
     scanf("%lld",&cliente.telefono);
     
@@ -349,7 +381,7 @@ void buscarcliente()
     arch=fopen("clientes.dat","rb");
     if (arch==NULL)
         exit(1);
-    printf("Ingrese la cedula del cliente :");
+    printf("Ingrese la cedula del cliente: ");
     int ced;
     scanf("%d", &ced);
     Clientes cliente;
@@ -389,7 +421,7 @@ void modificarclientes()
         {
            printf("%d %s %s %s %lld\n", cliente.cedula, cliente.nombre, cliente.apellido,cliente.direccion,cliente.telefono);
            printf("Ingrese nueva diereccion;\n");
-           scanf("%s",&cliente.direccion); 
+           scanf("%s",cliente.direccion); 
            printf("Ingrese nuevo numero de telefono;\n");
            scanf("%lld",&cliente.telefono); 
            int pos=ftell(arch)-sizeof(Clientes);
@@ -444,4 +476,261 @@ void borrarclientes()
     rename("clientes.tmp", "clientes.dat");
 }
 
+void creararchivoproductos()
+{
+    FILE *arch;
+    arch=fopen("productos.dat","a+");
+    if (arch==NULL)
+        exit(-1);
+    fclose(arch);
     
+}
+ bool verificarproducto(int c)
+{
+    FILE *arch;
+    arch=fopen("productos.dat","rb");
+    if (arch==NULL)
+        exit(-1);
+        Productos producto;
+    bool existe;
+    existe=false;
+    fread(&producto, sizeof(Productos), 1, arch);
+    while(!feof(arch)) 
+    {
+        if (c==producto.codigo) 
+        {
+           printf("%d %s %.2f %d %d\n", producto.codigo, producto.nombre, producto.precio,producto.existencia,producto.dep);
+           existe=true;
+           break;
+        }
+        fread(&producto, sizeof(Productos), 1, arch);
+    }
+    fclose(arch);
+    if (existe==true){
+        
+        
+        return true;      
+    }else{
+        return false;
+    }
+        
+    
+    
+}
+ void registrarproductos()
+{
+    creararchivoproductos();
+    Productos producto;
+    int c;
+    printf("Ingrese codigo del producto :");
+    scanf("%d", &c);
+    bool verificar;
+    
+    verificar=verificarproducto(c);
+    if (verificar)
+    {
+        printf("el codigo ingresado ya existe\n");
+    }else{
+        FILE *arch;
+    char ch;
+
+    arch=fopen("productos.dat","a+b");
+    if (arch==NULL)
+        exit(-1);
+    
+
+    
+    producto.codigo=c;
+    printf("Ingrese el nombre del producto: ");
+    scanf("%s", producto.nombre);
+    printf("Ingrese precio:");
+    scanf("%f",&producto.precio);
+    printf("Ingrese existencia:");
+    scanf("%d",&producto.existencia);
+    printf("Ingrese el codigo de departemaneto del producto: ");
+    scanf("%d",&producto.dep);
+    
+    fwrite(&producto, sizeof(Productos), 1, arch);
+    
+    fclose(arch);}
+}   
+void listadodeproductos()
+{
+    FILE *arch;
+    arch=fopen("productos.dat","rb"); 
+    if (arch==NULL) 
+        exit(-1);
+    Productos producto; 
+    fread(&producto, sizeof(Productos), 1, arch); 
+    printf("codigo  nombre  precio  existencia  departamento\n");
+    while(!feof(arch)) 
+    {
+        printf("%d\t %s\t  %.2f\t  %d\t      %d\n", producto.codigo, producto.nombre, producto.precio,producto.existencia,producto.dep);
+        
+        fread(&producto, sizeof(Productos), 1, arch);
+    }
+    fclose(arch);
+
+    
+    
+
+      
+    
+}
+void buscarproducto()
+{
+    FILE *arch;
+    arch=fopen("productos.dat","rb");
+    if (arch==NULL)
+        exit(1);
+    printf("Ingrese el codigo del producto: ");
+    int cod;
+    scanf("%d", &cod);
+    Productos producto;
+    int existe=0;
+    fread(&producto, sizeof(Productos), 1, arch);
+    printf("codigo  nombre  precio  existencia  departamento\n");
+
+    while(!feof(arch)) 
+    {
+        if (cod==producto.codigo) 
+        {
+           printf("%d\t %s\t  %.2f\t  %d\t      %d\n", producto.codigo, producto.nombre, producto.precio,producto.existencia,producto.dep);
+           existe=1;
+           break;
+        }
+        fread(&producto, sizeof(Productos), 1, arch);
+    }
+    if (existe==0)
+        printf("No existe un producto con este codigo\n");
+    fclose(arch);
+    
+}
+void modificarproductos()
+{
+    FILE *arch;
+    arch=fopen("productos.dat","r+b");
+    if (arch==NULL)
+        exit(-1);
+    printf("Ingrese el codigo del producto a modificar:");
+    int cod;
+    scanf("%d", &cod);
+    Productos producto;
+    int existe=0;
+    fread(&producto, sizeof(Productos), 1, arch);
+    while(!feof(arch))
+    {
+        if (cod==producto.codigo)
+        {
+           printf("%d %s %.2f %d %d\n", producto.codigo, producto.nombre, producto.precio,producto.existencia,producto.dep);
+           printf("Ingrese nuevo precio del producto:\n");
+           scanf("%f",&producto.precio); 
+           printf("Ingrese existencia del producto:\n");
+           scanf("%d",&producto.existencia); 
+           int pos=ftell(arch)-sizeof(Productos);
+           fseek(arch,pos,SEEK_SET); 
+           fwrite(&producto, sizeof(Productos), 1, arch); 
+           printf("Se modificaron los datos del producto.\n");
+           existe=1;
+           break;
+        }
+        fread(&producto, sizeof(Productos), 1, arch);
+    }
+    if (existe==0)
+        printf("No existeun producto con dicho codigo\n");
+    fclose(arch);
+    
+}
+void borrarproductos()
+{
+    FILE *arch;
+    arch=fopen("productos.dat","rb");
+    if (arch==NULL)
+        exit(1);
+    printf("Ingrese el codigo del producto a eliminar a eliminar: ");
+    int cod;
+    scanf("%d", &cod);
+    Productos producto;
+
+    FILE *nuevo;
+    nuevo=fopen("productos.tmp","ab");
+    if (arch==NULL)
+        exit(-1);
+
+    int existe=0;
+    fread(&producto, sizeof(Productos), 1, arch);
+    while(!feof(arch))
+    {
+        if (cod == producto.codigo)
+        {
+           printf("Producto %d %s %.2f %d %d Eliminado\n", producto.codigo, producto.nombre, producto.precio,producto.existencia,producto.dep);
+           existe=1;
+        }else{
+            fwrite(&producto, sizeof(Productos), 1, nuevo);
+        }
+        fread(&producto, sizeof(Productos), 1, arch);
+    }
+    if (existe==0)
+        printf("no existe el codigo del producto\n");
+    fclose(arch);
+    fclose(nuevo);
+    
+    remove("productos.dat");
+    rename("productos.tmp", "productos.dat");
+}
+void listadodeproductosagotados()
+{
+    FILE *arch;
+    arch=fopen("productos.dat","rb"); 
+    if (arch==NULL) 
+        exit(-1);
+    Productos producto; 
+    fread(&producto, sizeof(Productos), 1, arch); 
+    printf("codigo  nombre  precio  existencia  departamento\n");
+    while(!feof(arch)) 
+    {
+        if (producto.existencia==0)
+        {
+           printf("%d\t %s\t  %.2f\t  %d\t      %d\n", producto.codigo, producto.nombre, producto.precio,producto.existencia,producto.dep);
+        }
+        
+        
+        
+        fread(&producto, sizeof(Productos), 1, arch);
+    }
+    fclose(arch);
+
+    
+    
+
+      
+    
+}
+void listadodeproductosdisponibles()
+{
+    FILE *arch;
+    arch=fopen("productos.dat","rb"); 
+    if (arch==NULL) 
+        exit(-1);
+    Productos producto; 
+    fread(&producto, sizeof(Productos), 1, arch); 
+    printf("codigo  nombre  precio  existencia  departamento\n");
+    while(!feof(arch)) 
+    {
+        if (producto.existencia>0)
+        {
+           printf("%d\t %s\t  %.2f\t  %d\t      %d\n", producto.codigo, producto.nombre, producto.precio,producto.existencia,producto.dep);
+        }
+        
+        
+        
+        fread(&producto, sizeof(Productos), 1, arch);
+    }
+    fclose(arch);
+
+    
+    
+
+      
+    
+}

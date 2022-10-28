@@ -16,15 +16,25 @@ typedef struct
       long long int telefono;
 
 }Clientes;
+
 typedef struct 
 {
-      int codigo,existencia,dep;
+      int codigo,existencia,dep,sexo;
       char nombre[TM];
       float precio;
       
 
 }Productos;
 
+typedef struct
+{
+
+	int numero;
+	char nombre[50];
+		
+}Departamento;
+
+void facturar();
 void creararchivoclientes();
 int verificarcliente();
 void registrarclientes();
@@ -50,7 +60,7 @@ int seleccion[20];
 int main(){
 
      do{
-     	printf("INTRODUSCA UNA OPCION:\n");
+     	printf("INTRODUZCA UNA OPCION:\n");
         printf("1.FACTURACION:\n");
         printf("2.ADMINISTRACION\n");
         printf("3.REPORTES\n");
@@ -61,13 +71,14 @@ int main(){
        {
        case 1:
          printf("----------------FACTURACION------------------\n");
+        	facturar();
         break;
 
         case 2:
         printf("----------------ADMINISTRACION------------------\n");
         do
         {
-          printf("INTRODUSCA UNA OPCION:\n");
+          printf("INTRODUZCA UNA OPCION:\n");
           printf("1.REGISTAR CLIENTES:\n");
           printf("2.REGISTRAR PRODUCTOS:\n");
           printf("3.REGISTRAR DEPARTAMENTOS:\n");
@@ -81,7 +92,7 @@ int main(){
                printf("----------------CLIENTES------------------\n");
                 
           
-                    printf("INTRODUSCA UNA OPCION\n");
+                    printf("INTRODUZCA UNA OPCION\n");
                     printf("1.REGISTAR CLIENTES\n");
                     printf("2.BUSCAR CLIENTES\n");
                     printf("3.MODIFICAR CLIENTES\n");
@@ -125,7 +136,7 @@ int main(){
                do{
                 printf("----------------PRODUCTOS------------------\n");
           
-                    printf("INTRODUSCA UNA OPCION\n");
+                    printf("INTRODUZCA UNA OPCION\n");
                     printf("1.REGISTAR PRODUCTO\n");
                     printf("2.BUSCAR PRODUCTO\n");
                     printf("3.MODIFICAR PRODUCTO\n");
@@ -168,7 +179,7 @@ int main(){
                     do{
                 printf("----------------DEPATRAMENTOS------------------\n");
           
-                    printf("INTRODUSCA UNA OPCION\n");
+                    printf("INTRODUZCA UNA OPCION\n");
                     printf("1.REGISTAR DEPARTAMENTO\n");
                     printf("2.BUSCAR DEPARTAMENTO\n");
                     printf("3.MODIFICAR DEPARTAMENTO\n");
@@ -213,7 +224,7 @@ int main(){
         printf("----------------REPORTES------------------\n");
         do
         {
-            printf("INTRODUSCA UNA OPCION\n");
+            printf("INTRODUZCA UNA OPCION\n");
                     printf("1.FACTURACION\n");
                     printf("2.VENTAS POR DIA\n");
                     printf("3.VENTAS POR MES\n");
@@ -549,6 +560,8 @@ void creararchivoproductos()
     scanf("%d",&producto.existencia);
     printf("Ingrese el codigo de departemaneto del producto: ");
     scanf("%d",&producto.dep);
+    printf("Ingrese el sexo del producto: ");
+    scanf("%d",&producto.sexo);
     
     fwrite(&producto, sizeof(Productos), 1, arch);
     
@@ -733,4 +746,118 @@ void listadodeproductosdisponibles()
 
       
     
+}
+
+void facturar(){
+	
+	FILE *arch;
+    Productos producto;
+    Departamento departamento;
+    
+	float total = 0;
+	int ContProductos=0,cedula,menu,dep,num_dep = 5,dep_prod,dato,x,codigo;
+	char nombre[20],apellido[20],met_pago[20],direccion[50],dato2[50];
+	
+	
+	printf("Ingrese le cedula:");
+	fflush(stdin);
+	scanf("%i",&cedula);
+	
+	printf("\nIngrese el nombre:");
+	fflush(stdin);
+	scanf("%s",nombre);
+	
+	printf("\nIngrese el apellido:");
+	fflush(stdin);
+	scanf("%s",apellido);
+	
+	printf("\nIngrese el metodo de pago:");
+	fflush(stdin);
+	scanf("%s",met_pago);
+	
+	printf("\nIngrese la direccion:");
+	fflush(stdin);
+	fgets(direccion,50,stdin);
+	
+	do{
+		printf("\nQue desea hacer?\n");
+		printf("\n1.Agregar un producto");
+		printf("\n2.Finalizar compra\n\n");
+		scanf("%i",&menu);
+		
+		if(menu==1){
+			
+			printf("\nSeleccione el sexo: ");
+			printf("\n1.Masculino");
+			printf("\n2.Femenino\n\n");
+			scanf("%i",&x);
+			
+			printf("\nSeleccione un departamento\n");
+			
+			arch=fopen("departamentos.dat","rb");
+			fread(&departamento, sizeof(Departamento), 1, arch);
+			
+			while(!feof(arch)){
+				
+				printf("\n%i.%s\n",departamento.numero,departamento.nombre);
+				
+				fread(&departamento, sizeof(Departamento), 1, arch);
+			}
+			
+			
+			printf("\n\n");
+			fclose(arch);
+			
+			scanf("%i",&dep_prod);
+				
+				
+			printf("\n\nProductos del departamento seleccionado: \n\n");
+			
+			
+			arch=fopen("productos.dat","rb");
+			fread(&producto, sizeof(Productos), 1, arch);
+			while(!feof(arch)){
+				
+				if(dep_prod==producto.dep&&x==producto.sexo){
+					
+        		printf("\n%i  %s\n",producto.codigo,producto.nombre);
+        		
+				}
+				
+        		fread(&producto, sizeof(Productos), 1, arch);
+				
+			}
+			
+			fclose(arch);
+			printf("nIngrese el codigo del producto que desea agregar: ");
+			scanf("%i",&codigo);
+			
+			arch=fopen("productos.dat","rb");
+			
+			fread(&producto, sizeof(Productos), 1, arch);
+			while(!feof(arch)){
+				if(producto.codigo ==codigo){
+					total = total + producto.precio;
+					fread(&producto, sizeof(Productos), 1, arch);
+					ContProductos = ContProductos + 1;
+				}
+			}
+			fclose(arch);
+			
+		}
+		
+		limpiar();
+		
+	}while(menu==1);
+	
+	printf("\nFactura:\n");
+	printf("\nCedula: %i",cedula);
+	printf("\nNombre: %s",nombre);
+	printf("\nApellido: %s",apellido);
+	printf("\nMetodo de pago: %s",met_pago);
+	printf("\nDireccion: %s",direccion);
+	printf("\nNumero de productos: %i",ContProductos);
+	printf("\nTotal a pagar: %.2f\n",total);
+
+
 }
